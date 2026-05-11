@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace House_renting_system_Project.Data.Data.Entities;
 
-namespace House_renting_system_Project.Data.Data.Entities
+using Microsoft.AspNetCore.Identity;
+
+public class ApplicationUser : IdentityUser
 {
-    public class ApplicationUser : IdentityUser
-    {
-		public List<House> Houses { get; set; }
-	}
+	public List<House> Houses { get; set; } = [];
 }

@@ -1,39 +1,31 @@
-﻿using House_renting_system_Project.Data.Configurations;
-using House_renting_system_Project.Data.Data.Entities;
+﻿namespace House_renting_system_Project.Data.Data;
+
+using System.Reflection;
+using Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-namespace House_renting_system_Project.Data.Data
+
+public class HouseRentingDbContext(
+	DbContextOptions<HouseRentingDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-	public class HouseRentingDbContext : IdentityDbContext<ApplicationUser>
+    public DbSet<House> Houses { get; init; } = null!;
+
+	public DbSet<Category> Categories { get; init; } = null!;
+
+	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		
-		public HouseRentingDbContext
-			(DbContextOptions<HouseRentingDbContext> options)
-			: base(options)
+		if (!optionsBuilder.IsConfigured)
 		{
+			optionsBuilder.UseSqlServer(
+				"Server=(LocalDb)\\MSSQLLocalDB;Database=HouseRentingLubo;TrustServerCertificate=true;");
 		}
+	}
 
-		public DbSet<House> Houses { get; init; } = null!;
-		public DbSet<Category> Categories { get; init; } = null!;
+	protected override void OnModelCreating(ModelBuilder builder)
+	{
+		base.OnModelCreating(builder);
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			if (optionsBuilder.IsConfigured == false)
-			{
-				optionsBuilder.UseSqlServer("Server=(LocalDb)\\MSSQLLocalDB;Database=HouseRentingLubo;TrustServerCertificate=true;");
-			}
-		}
-		protected override void OnModelCreating(ModelBuilder builder)
-		{
-			builder.Entity<House>()
-				.HasQueryFilter(h => !h.IsDeleted);
-
-			builder.ApplyConfiguration(new CategoryConfiguration());
-			builder.ApplyConfiguration(new HouseConfiguration());
-
-			base.OnModelCreating(builder);
-		}
-
-
+		builder.ApplyConfigurationsFromAssembly(
+			Assembly.GetExecutingAssembly());
 	}
 }

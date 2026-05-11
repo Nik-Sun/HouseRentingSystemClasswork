@@ -1,11 +1,12 @@
-using House_Renting_System_Project.Services.Models.Auth;
+namespace House_Renting_System_Project.Services.Contracts;
 
-namespace House_Renting_System_Project.Services.Contracts
+using Models.Auth;
+public interface IAuthService
 {
-	public interface IAuthService
-	{
-		Task<bool> LoginAsync(LoginServiceModel model);
-		Task<AuthOperationResult> RegisterAsync(RegisterServiceModel model);
-		Task LogoutAsync();
-	}
+	Task<bool> LoginAsync(LoginServiceModel model);
+
+	Task<AuthOperationResult> RegisterAsync(
+		RegisterServiceModel model);
+
+	Task LogoutAsync();
 }

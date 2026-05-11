@@ -1,70 +1,67 @@
+namespace House_Renting_System_Project.Services.Implementations;
+
+using Contracts;
 using House_renting_system_Project.Data.Data.Entities;
-using House_Renting_System_Project.Services.Contracts;
-using House_Renting_System_Project.Services.Models.Auth;
 using Microsoft.AspNetCore.Identity;
-
-namespace House_Renting_System_Project.Services.Implementations
+using Models.Auth;
+    
+public class AuthService(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager) : IAuthService
 {
-	public class AuthService : IAuthService
+    public async Task<bool> LoginAsync(LoginServiceModel model)
 	{
-		private readonly UserManager<ApplicationUser> userManager;
-		private readonly SignInManager<ApplicationUser> signInManager;
-
-		public AuthService(
-			UserManager<ApplicationUser> userManager,
-			SignInManager<ApplicationUser> signInManager)
+		var user = await userManager.FindByEmailAsync(model.Email);
+		if (user is null)
 		{
-			this.userManager = userManager;
-			this.signInManager = signInManager;
+			return false;
 		}
 
-		public async Task<bool> LoginAsync(LoginServiceModel model)
+		var isPasswordValid = await userManager.CheckPasswordAsync(
+			user,
+			model.Password);
+
+		if (!isPasswordValid)
 		{
-			var user = await userManager.FindByEmailAsync(model.Email);
-			if (user == null)
-			{
-				return false;
-			}
-
-			var isPasswordValid = await userManager.CheckPasswordAsync(user, model.Password);
-			if (!isPasswordValid)
-			{
-				return false;
-			}
-
-			await signInManager.SignInAsync(user, model.RememberMe);
-			return true;
+			return false;
 		}
 
-		public async Task<AuthOperationResult> RegisterAsync(RegisterServiceModel model)
-		{
-			var existingUser = await userManager.FindByEmailAsync(model.Email);
-			if (existingUser != null)
-			{
-				return new AuthOperationResult
-				{
-					Errors = new[] { "User already exists" }
-				};
-			}
+		await signInManager.SignInAsync(
+			user,
+			model.RememberMe);
 
-			var newUser = new ApplicationUser
-			{
-				UserName = model.Username,
-				Email = model.Email
-			};
-
-			var result = await userManager.CreateAsync(newUser, model.Password);
-
-			return new AuthOperationResult
-			{
-				Succeeded = result.Succeeded,
-				Errors = result.Errors.Select(error => error.Description)
-			};
-		}
-
-		public Task LogoutAsync()
-		{
-			return signInManager.SignOutAsync();
-		}
+		return true;
 	}
+
+	public async Task<AuthOperationResult> RegisterAsync(
+		RegisterServiceModel model)
+	{
+		var existingUser = await userManager.FindByEmailAsync(model.Email);
+		if (existingUser is not null)
+		{
+			return new()
+			{
+				Errors = ["User already exists"]
+			};
+		}
+
+		var newUser = new ApplicationUser
+		{
+			UserName = model.Username,
+			Email = model.Email
+		};
+
+		var result = await userManager.CreateAsync(
+			newUser,
+			model.Password);
+
+		return new()
+		{
+			Succeeded = result.Succeeded,
+			Errors = result.Errors.Select(error => error.Description)
+		};
+	}
+
+	public Task LogoutAsync()
+		=> signInManager.SignOutAsync();
 }
