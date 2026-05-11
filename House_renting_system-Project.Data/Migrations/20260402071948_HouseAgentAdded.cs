@@ -44,12 +44,25 @@ namespace House_renting_system_Project.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail",
+                                 "EmailConfirmed", "PasswordHash", "SecurityStamp", "ConcurrencyStamp",
+                                 "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled", "AccessFailedCount" },
+                values: new object[] {
+                    "1f85374b-dcc0-44a9-9042-de8dc94b661a",
+                    "agent@seed.com", "AGENT@SEED.COM",
+                    "agent@seed.com", "AGENT@SEED.COM",
+                    false, null, "static-security-stamp", "static-concurrency-stamp",
+                    false, false, false, 0
+                });
+
+            migrationBuilder.InsertData(
                 table: "Houses",
                 columns: new[] { "Id", "Address", "AgentId", "CategoryId", "Description", "ImageUrl", "PricePerMonth", "RenterId", "Title" },
                 values: new object[,]
                 {
-                    { 3, "33 Industrial Zone, Sofia", "1f85374b-dcc0-44a9-9042-de8dc94b661a", 6, "Stylish loft with open space design and high ceilings.", "https://images.unsplash.com/photo-1484154218962-a197022b5858", 1000m, null, "Modern Loft" },
-                    { 4, "18 Studentski Grad, Sofia", "1f85374b-dcc0-44a9-9042-de8dc94b661a", 7, "Affordable room suitable for students.", "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85", 400m, null, "Budget Room" },
+                    { 3, "33 Industrial Zone, Sofia", "1f85374b-dcc0-44a9-9042-de8dc94b661a", 4, "Stylish loft with open space design and high ceilings.", "https://images.unsplash.com/photo-1484154218962-a197022b5858", 1000m, null, "Modern Loft" },
+                    { 4, "18 Studentski Grad, Sofia", "1f85374b-dcc0-44a9-9042-de8dc94b661a", 4, "Affordable room suitable for students.", "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85", 400m, null, "Budget Room" },
                     { 1, "North London, UK (near the border)", "1f85374b-dcc0-44a9-9042-de8dc94b661a", 5, "A big house for your whole family. Don't miss to buy a house with three bedrooms.", "https://www.luxury-architecture.net/wp-content/uploads/2017/12/1513217889-7597-FAIRWAYS-010.jpg", 2100.00m, null, "Big House Marina" },
                     { 2, "Near the Sea Garden in Burgas, Bulgaria", "1f85374b-dcc0-44a9-9042-de8dc94b661a", 5, "It has the best comfort you will ever ask for. With two bedrooms, it is great for your family.", "https://cf.bstatic.com/xdata/images/hotel/max1024x768/179489660.jp?k=2029f6d9589b49c95dcc9503a265e292c2cdfcb5277487a0050397c3f8dd545a&o=&hp=1", 1200.00m, null, "Family House Comfort" }
                 });

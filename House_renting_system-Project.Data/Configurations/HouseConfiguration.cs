@@ -63,7 +63,7 @@ namespace House_renting_system_Project.Data.Configurations
 		Description = "Stylish loft with open space design and high ceilings.",
 		ImageUrl = "https://images.unsplash.com/photo-1484154218962-a197022b5858",
 		PricePerMonth = 1000,
-		CategoryId = 6,
+		CategoryId = 4,
 		AgentId = "1f85374b-dcc0-44a9-9042-de8dc94b661a"
 	},
 	new House
@@ -74,7 +74,7 @@ namespace House_renting_system_Project.Data.Configurations
 		Description = "Affordable room suitable for students.",
 		ImageUrl = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
 		PricePerMonth = 400,
-		CategoryId = 7,
+		CategoryId = 4,
 		AgentId = "1f85374b-dcc0-44a9-9042-de8dc94b661a"
 	}
 			};
