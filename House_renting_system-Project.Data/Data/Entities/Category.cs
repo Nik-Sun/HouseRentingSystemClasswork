@@ -13,5 +13,5 @@ public class Category
     [MaxLength(NameMaxLength)]
     public string Name { get; set; } = null!;
 
-    public IEnumerable<House> Houses { get; init; } = [];
+    public IEnumerable<House> Houses { get; init; } = null!;
 }

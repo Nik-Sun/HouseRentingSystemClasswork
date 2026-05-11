@@ -4,5 +4,5 @@ using Microsoft.AspNetCore.Identity;
 
 public class ApplicationUser : IdentityUser
 {
-	public List<House> Houses { get; set; } = [];
+	public List<House> Houses { get; set; } = null!;
 }

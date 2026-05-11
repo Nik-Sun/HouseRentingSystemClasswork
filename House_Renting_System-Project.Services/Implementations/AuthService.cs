@@ -4,7 +4,7 @@ using Contracts;
 using House_renting_system_Project.Data.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Models.Auth;
-    
+
 public class AuthService(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager) : IAuthService
@@ -54,6 +54,7 @@ public class AuthService(
 		var result = await userManager.CreateAsync(
 			newUser,
 			model.Password);
+
 
 		return new()
 		{

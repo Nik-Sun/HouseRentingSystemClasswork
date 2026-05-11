@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace House_renting_system_Project.Data.Migrations
 {
     [DbContext(typeof(HouseRentingDbContext))]
-    [Migration("20260326084431_Initial")]
+    [Migration("20260511220409_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,30 +24,6 @@ namespace House_renting_system_Project.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.Agent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Agents");
-                });
 
             modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.ApplicationUser", b =>
                 {
@@ -140,12 +116,22 @@ namespace House_renting_system_Project.Data.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Single-Family"
+                            Name = "Single-Family House"
                         },
                         new
                         {
                             Id = 3,
                             Name = "Duplex"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "One Bedroom"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Double Bedroom"
                         });
                 });
 
@@ -162,8 +148,9 @@ namespace House_renting_system_Project.Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("AgentId")
-                        .HasColumnType("int");
+                    b.Property<string>("AgentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -176,6 +163,9 @@ namespace House_renting_system_Project.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("PricePerMonth")
                         .HasMaxLength(2000)
@@ -333,21 +323,10 @@ namespace House_renting_system_Project.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.Agent", b =>
-                {
-                    b.HasOne("House_renting_system_Project.Data.Data.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.House", b =>
                 {
-                    b.HasOne("House_renting_system_Project.Data.Data.Entities.Agent", "Agent")
-                        .WithMany("ManagedHouses")
+                    b.HasOne("House_renting_system_Project.Data.Data.Entities.ApplicationUser", "Agent")
+                        .WithMany("Houses")
                         .HasForeignKey("AgentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -420,9 +399,9 @@ namespace House_renting_system_Project.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.Agent", b =>
+            modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.ApplicationUser", b =>
                 {
-                    b.Navigation("ManagedHouses");
+                    b.Navigation("Houses");
                 });
 
             modelBuilder.Entity("House_renting_system_Project.Data.Data.Entities.Category", b =>

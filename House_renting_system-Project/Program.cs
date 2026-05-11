@@ -1,5 +1,6 @@
 using House_renting_system_Project.Data.Data;
 using House_renting_system_Project.Data.Data.Entities;
+using House_renting_system_Project.Extensions;
 using House_renting_system_Project.Middlewares;
 using House_Renting_System_Project.Services.Contracts;
 using House_Renting_System_Project.Services.Implementations;
@@ -44,6 +45,14 @@ builder
     .AddControllersWithViews();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<HouseRentingDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+await app.SeedHouses();
 
 if (app.Environment.IsDevelopment())
 {

@@ -39,7 +39,7 @@ public class House
     [ForeignKey(nameof(Agent))]
     public string AgentId { get; set; } = null!;
 
-    public ApplicationUser Agent { get; set; } = new();
+    public ApplicationUser Agent { get; set; } = null!;
 
     public string? RenterId { get; set; }
 

@@ -1,13 +1,10 @@
 ﻿@model AllHousesViewModel
 
-
-
 <h2 class="text-center">@ViewBag.Title</h2>
 <h2 class="text-center">@ViewBag.FromConfiguration</h2>
 <hr />
 <form method="get">
     <div>
-
         <label>Choose Category</label>
         <select name="CategoryId" class="dropdown">
            <option selected value="0">All</option>
@@ -28,7 +25,6 @@
 <div class="text-center row">
     @foreach (var house in Model.Houses)
     {
-
         <div class="card col-4" style="width: 20rem;">
             <img class="card-img-top" src="@house.ImageUrl" alt="House Image">
             <div class="card-body">
@@ -42,13 +38,11 @@
                         Edit
                     </a>
                 }
-
-
                 <a asp-controller="House" asp-action="Details" asp-route-Id="@house.Id" class="btn btn-light">
                     Details
                 </a>
+                }
             </div>
-
         </div>
     }
 </div>

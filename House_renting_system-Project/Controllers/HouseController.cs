@@ -1,12 +1,12 @@
 namespace House_renting_system_Project.Controllers;
 
-using System.Security.Claims;
 using House_Renting_System_Project.Services.Contracts;
 using House_Renting_System_Project.Services.Models.Houses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.House;
 using Models.Query;
+using System.Security.Claims;
 
 public class HouseController(IHouseService service) : Controller
 {
@@ -84,8 +84,8 @@ public class HouseController(IHouseService service) : Controller
 		return this.View(model);
 	}
 
-	[Authorize]
-	[HttpPost]
+    [Authorize]
+    [HttpPost]
 	public async Task<IActionResult> Create(CreateHouseModel model)
 	{
 		if (!this.ModelState.IsValid)
@@ -107,8 +107,8 @@ public class HouseController(IHouseService service) : Controller
 		return this.RedirectToAction(nameof(this.AllHouses));
 	}
 
-	[Authorize]
-	[HttpGet]
+    [Authorize]
+    [HttpGet]
 	public async Task<IActionResult> MyHouses()
 	{
 		var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -132,8 +132,8 @@ public class HouseController(IHouseService service) : Controller
 	}
 
 	[HttpGet]
-	[Authorize]
-	public async Task<IActionResult> Edit(int id)
+    [Authorize]
+    public async Task<IActionResult> Edit(int id)
 	{
 		var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 		if (string.IsNullOrWhiteSpace(currentUserId))
@@ -166,8 +166,8 @@ public class HouseController(IHouseService service) : Controller
 	}
 
 	[HttpPost]
-	[Authorize]
-	public async Task<IActionResult> Edit(CreateHouseModel model)
+    [Authorize]
+    public async Task<IActionResult> Edit(CreateHouseModel model)
 	{
 		if (!this.ModelState.IsValid)
 		{
@@ -193,8 +193,9 @@ public class HouseController(IHouseService service) : Controller
 		return this.RedirectToAction(nameof(this.MyHouses));
 	}
 
-	[Authorize]
-	public async Task<IActionResult> Delete(int id)
+	[HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Delete(int id)
 	{
 		var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 		if (string.IsNullOrWhiteSpace(currentUserId))
@@ -214,14 +215,14 @@ public class HouseController(IHouseService service) : Controller
 		return this.RedirectToAction(nameof(this.MyHouses));
 	}
 
-	private static HousesViewModel MapHouse(HouseSummaryServiceModel house)
+    private static HousesViewModel MapHouse(HouseSummaryServiceModel house)
 		=> new()
 		{
 			Id = house.Id,
 			Name = house.Name,
 			Address = house.Address,
 			ImageUrl = house.ImageUrl,
-			CurrentUserIsOwner = house.CurrentUserIsOwner
+			CurrentUserIsOwner = house.CurrentUserIsOwner,
 		};
 
 	private static CategoryViewModel MapCategory(HouseCategoryServiceModel category)

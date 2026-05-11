@@ -87,26 +87,6 @@ namespace House_renting_system_Project.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Agents",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Agents", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Agents_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -203,16 +183,17 @@ namespace House_renting_system_Project.Data.Migrations
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PricePerMonth = table.Column<decimal>(type: "decimal(12,3)", maxLength: 2000, nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    AgentId = table.Column<int>(type: "int", nullable: false),
-                    RenterId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    AgentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RenterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Houses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Houses_Agents_AgentId",
+                        name: "FK_Houses_AspNetUsers_AgentId",
                         column: x => x.AgentId,
-                        principalTable: "Agents",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -234,14 +215,11 @@ namespace House_renting_system_Project.Data.Migrations
                 values: new object[,]
                 {
                     { 1, "Cottage" },
-                    { 2, "Single-Family" },
-                    { 3, "Duplex" }
+                    { 2, "Single-Family House" },
+                    { 3, "Duplex" },
+                    { 4, "One Bedroom" },
+                    { 5, "Double Bedroom" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Agents_UserId",
-                table: "Agents",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -323,13 +301,10 @@ namespace House_renting_system_Project.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Agents");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
         }
     }
 }

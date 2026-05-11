@@ -5,7 +5,7 @@ using House_renting_system_Project.Data.Data.Entities;
 using House_Renting_System_Project.Services.Contracts;
 using House_Renting_System_Project.Services.Models.Houses;
 using Microsoft.EntityFrameworkCore;
-    
+
 public class HouseService(HouseRentingDbContext data) : IHouseService
 {
     public async Task<IReadOnlyCollection<HouseSummaryServiceModel>> GetAllAsync(
@@ -38,8 +38,8 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
 				Id = h.Id,
 				ImageUrl = h.ImageUrl,
 				Name = h.Title,
-				CurrentUserIsOwner = h.AgentId == currentUserId
-			})
+				CurrentUserIsOwner = h.AgentId == currentUserId,
+            })
 			.ToListAsync();
 	}
 
@@ -169,4 +169,41 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
 
 		return true;
 	}
+
+    public async Task<bool> RentAsync(
+		int houseId,
+		string userRenterId)
+    {
+		var house = await this.GetHouse(houseId);
+		if (house is null || house.RenterId is not null)
+		{
+			return false;
+		}
+
+		house.RenterId = userRenterId;
+		await data.SaveChangesAsync();
+
+		return true;
+    }
+
+    public async Task<bool> LeaveAsync(
+		int houseId,
+		string userRenterId)
+    {
+        var house = await this.GetHouse(houseId);
+        if (house is null || house.RenterId is null)
+        {
+            return false;
+        }
+
+        house.RenterId = null;
+        await data.SaveChangesAsync();
+
+        return true;
+    }
+
+	private async Task<House?> GetHouse(int id)
+		=> await data
+			.Houses
+			.FirstOrDefaultAsync(h => h.Id == id);
 }
