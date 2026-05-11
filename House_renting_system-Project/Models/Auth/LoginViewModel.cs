@@ -5,7 +5,7 @@ namespace House_renting_system_Project.Models.Auth
 	public class LoginViewModel
 	{
 		[Required]
-		[StringLength(20,MinimumLength = 3, ErrorMessage = "Invalid Username")]
+		[StringLength(20, MinimumLength = 3, ErrorMessage = "Invalid Username")]
 		public string Username { get; set; } = string.Empty;
 
 		[Required]

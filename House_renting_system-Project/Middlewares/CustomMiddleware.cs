@@ -1,20 +1,16 @@
+namespace House_renting_system_Project.Middlewares;
+
 using House_Renting_System_Project.Services.Contracts;
 
-namespace House_renting_system_Project.Middlewares
-{
-	public class CustomMiddleware
+public class CustomMiddleware(RequestDelegate next)
+    {
+	private readonly RequestDelegate next = next;
+
+        public async Task InvokeAsync(
+		HttpContext httpContext,
+		IStatisticsService service)
 	{
-		private RequestDelegate next;
-
-		public CustomMiddleware(RequestDelegate next)
-		{
-			this.next = next;
-		}
-
-		public async Task InvokeAsync(HttpContext httpContext, IStatisticsService service)
-		{
-			service.RegisterRequest();
-			await next(httpContext);
-		}
+		service.RegisterRequest();
+		await next(httpContext);
 	}
 }

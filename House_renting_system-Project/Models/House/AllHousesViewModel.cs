@@ -6,6 +6,6 @@ namespace House_renting_system_Project.Models.House
 	{
 		public QueryViewModel Query { get; set; } = new QueryViewModel();
 		public List<HousesViewModel> Houses { get; set; } = new List<HousesViewModel>();
-		public List<CategoryViewModel> Categoryies { get; set; } = new List<CategoryViewModel>();
+		public List<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
 	}
 }

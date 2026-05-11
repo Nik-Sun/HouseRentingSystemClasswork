@@ -1,42 +1,29 @@
-using House_renting_system_Project.Models;
+namespace House_renting_system_Project.Controllers;
+
 using House_Renting_System_Project.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace House_renting_system_Project.Controllers
+public class HomeController(IStatisticsService service) : Controller
 {
-    public class HomeController : Controller
+    public IActionResult Index()
     {
-		private readonly IStatisticsService statService;
+		this.ViewBag.TotalRequests = service.TotalRequests;
+		return this.View();
+    }
 
-		public HomeController(IStatisticsService statService)
+	public IActionResult Error(int statusCode)
+	{
+		if (statusCode == 401)
 		{
-			this.statService = statService;
+			return this.View("Unauthorized");
 		}
 
-		public IActionResult Index()
-        {
-			ViewBag.TotalRequests = statService.TotalRequests;
-			return View();
-        }
-
-		public IActionResult Error(int statusCode)
-		{
-			if (statusCode == 401)
-			{
-				return View("Unauthorized");
-			}
-
-			return View("NotFound");
-		}
-
-		public IActionResult Crash()
-		{
-			throw new Exception("Test exception");
-		}
-
-		public IActionResult ServerError()
-		{
-			return View();
-		}
+		return this.View("NotFound");
 	}
+
+	public IActionResult Crash()
+		=> throw new Exception("Test exception");
+
+	public IActionResult ServerError()
+		=> this.View();
 }

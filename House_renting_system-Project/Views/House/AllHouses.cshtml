@@ -11,7 +11,7 @@
         <label>Choose Category</label>
         <select name="CategoryId" class="dropdown">
            <option selected value="0">All</option>
-            @foreach (var item in Model.Categoryies)
+            @foreach (var item in Model.Categories)
                 {
                     <option value="@item.Id">@item.Name</option>
                 }

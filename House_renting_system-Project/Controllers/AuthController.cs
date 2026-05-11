@@ -1,89 +1,84 @@
-using House_renting_system_Project.Models.Auth;
+namespace House_renting_system_Project.Controllers;
+
 using House_Renting_System_Project.Services.Contracts;
 using House_Renting_System_Project.Services.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
-
-namespace House_renting_system_Project.Controllers
+using Models.Auth;
+    
+public class AuthController(IAuthService service) : Controller
 {
-	public class AuthController : Controller
+	[HttpGet]
+	public IActionResult Login()
+		=> this.View();
+
+	[HttpPost]
+	public async Task<IActionResult> Login(LoginViewModel model)
 	{
-		private readonly IAuthService authService;
-
-		public AuthController(IAuthService authService)
+		if (!this.ModelState.IsValid)
 		{
-			this.authService = authService;
+			return this.View(model);
 		}
 
-		[HttpGet]
-		public IActionResult Login()
+		var loginServiceModel = new LoginServiceModel
 		{
-			return View();
+			Email = model.Email,
+			Password = model.Password,
+			RememberMe = model.RememberMe
+		};
+
+        var isLoggedIn = await service.LoginAsync(loginServiceModel);
+
+		if (isLoggedIn)
+		{
+			return this.RedirectToAction("Index", "Home");
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Login(LoginViewModel model)
+		this.ModelState.AddModelError(
+			string.Empty,
+			"Invalid login attempt.");
+
+		return this.View(model);
+	}
+
+	[HttpGet]
+	public IActionResult Register()
+		=> this.View();
+
+	[HttpPost]
+	public async Task<IActionResult> Register(RegisterViewModel model)
+	{
+		if (!this.ModelState.IsValid)
 		{
-			if (ModelState.IsValid == false)
-			{
-				return View(model);
-			}
-
-			var isLoggedIn = await authService.LoginAsync(new LoginServiceModel
-			{
-				Email = model.Email,
-				Password = model.Password,
-				RememberMe = model.RememberMe
-			});
-
-			if (isLoggedIn)
-			{
-				return RedirectToAction("Index", "Home");
-			}
-
-			ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-			return View(model);
+			return this.View(model);
 		}
 
-		[HttpGet]
-		public IActionResult Register()
+		var registerServiceModel = new RegisterServiceModel
 		{
-			return View();
+			Username = model.Username,
+			Email = model.Email,
+			Password = model.Password
+		};
+
+        var result = await service.RegisterAsync(registerServiceModel);
+
+		if (result.Succeeded)
+		{
+			this.TempData["Success"] = "User Created Successfully!";
+			return this.RedirectToAction(nameof(this.Login));
 		}
 
-		[HttpPost]
-		public async Task<IActionResult> Register(RegisterViewModel model)
+		foreach (var error in result.Errors)
 		{
-			if (ModelState.IsValid == false)
-			{
-				return View(model);
-			}
-
-			var result = await authService.RegisterAsync(new RegisterServiceModel
-			{
-				Username = model.Username,
-				Email = model.Email,
-				Password = model.Password
-			});
-
-			if (result.Succeeded)
-			{
-				TempData["Success"] = "User Created Successfully!";
-				return RedirectToAction(nameof(Login));
-			}
-
-			foreach (var error in result.Errors)
-			{
-				ModelState.AddModelError(string.Empty, error);
-			}
-
-			return View(model);
+			this.ModelState.AddModelError("", error);
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> Logout()
-		{
-			await authService.LogoutAsync();
-			return RedirectToAction("Index", "Home");
-		}
+		return this.View(model);
+	}
+
+	[HttpGet]
+	public async Task<IActionResult> Logout()
+	{
+		await service.LogoutAsync();
+		return this.RedirectToAction("Index", "Home");
 	}
 }
