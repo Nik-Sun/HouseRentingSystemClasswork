@@ -1,0 +1,77 @@
+using House_renting_system_Project.Data.Data;
+using House_renting_system_Project.Data.Data.Entities;
+using House_renting_system_Project.Middlewares;
+using House_Renting_System_Project.Services.Contracts;
+using House_Renting_System_Project.Services.Implementations;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace House_renting_system_Project
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<HouseRentingDbContext>(opt => opt.UseSqlServer(connectionString));
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
+            {
+                opt.User.RequireUniqueEmail = true;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequiredLength = 6;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.SignIn.RequireConfirmedEmail = false;
+            })
+                .AddEntityFrameworkStores<HouseRentingDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Auth/Login";
+                options.AccessDeniedPath = "/User/AccessDenied";
+            });
+
+            builder.Services.AddControllersWithViews();
+
+			builder.Services.AddSingleton<IStatisticsService, StatisticsService>();
+			builder.Services.AddScoped<IHouseService, HouseService>();
+			builder.Services.AddScoped<IAuthService, AuthService>();
+
+			var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+				app.UseExceptionHandler("/Home/ServerError");
+				app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+				app.UseHsts();
+			}
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+
+			app.UseStatistics();
+
+			app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseStaticFiles();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}")
+                .WithStaticAssets();
+
+			app.Run();
+        }
+    }
+}
