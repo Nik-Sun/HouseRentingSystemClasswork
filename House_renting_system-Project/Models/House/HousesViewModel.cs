@@ -11,4 +11,8 @@ public class HousesViewModel
 	public string ImageUrl { get; set; } = string.Empty;
 
 	public bool CurrentUserIsOwner { get; set; }
+
+    public bool CurrentUserIsRenter { get; init; }
+
+    public bool IsRented { get; init; }
 }

@@ -55,6 +55,12 @@ public class AuthService(
 			newUser,
 			model.Password);
 
+		if (result.Succeeded)
+		{
+			await userManager.AddToRoleAsync(
+				newUser,
+				model.Role);
+		}
 
 		return new()
 		{

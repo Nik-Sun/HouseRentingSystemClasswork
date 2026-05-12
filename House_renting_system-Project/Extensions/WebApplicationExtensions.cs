@@ -2,11 +2,59 @@
 
 using Data.Data.Entities;
 using House_renting_system_Project.Data.Data;
+using Microsoft.AspNetCore.Identity;
+
+using static Common.Constants.RoleNames;
+using static Common.Constants.UserCredentials;
 
 public static class WebApplicationExtensions
 {
     extension(WebApplication app)
     {
+        public async Task SeedRoles()
+        {
+            using var scope = app.Services.CreateScope();
+
+            var roleManager = scope
+                .ServiceProvider
+                .GetRequiredService<RoleManager<IdentityRole>>();
+
+            var userManager = scope
+                .ServiceProvider
+                .GetRequiredService<UserManager<ApplicationUser>>();
+
+            foreach (var roleName in Names)
+            {
+                var exists = await roleManager.RoleExistsAsync(roleName);
+                if (!exists)
+                {
+                    var role = new IdentityRole(roleName);
+                    await roleManager.CreateAsync(role);
+                }
+
+                var defaultAgent = await userManager
+                    .FindByIdAsync("1f85374b-dcc0-44a9-9042-de8dc94b661a");
+
+                if (defaultAgent is null)
+                {
+                    var agent = new ApplicationUser
+                    {
+                        Id = "1f85374b-dcc0-44a9-9042-de8dc94b661a",
+                        UserName = DefaultAgentUsername,
+                        Email = DefaultAgentEmail,
+                    };
+
+                    await userManager.CreateAsync(
+                        agent,
+                        DefaultAgentPassword);
+
+                    await userManager.AddToRoleAsync(
+                        agent,
+                        Agent);
+                }
+            }
+        }
+
         public async Task SeedHouses()
         {
             using var scope = app.Services.CreateScope();

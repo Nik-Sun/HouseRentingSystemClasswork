@@ -48,10 +48,14 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<HouseRentingDbContext>();
-    await db.Database.MigrateAsync();
+    var data = scope
+        .ServiceProvider
+        .GetRequiredService<HouseRentingDbContext>();
+
+    await data.Database.MigrateAsync();
 }
 
+await app.SeedRoles();
 await app.SeedHouses();
 
 if (app.Environment.IsDevelopment())

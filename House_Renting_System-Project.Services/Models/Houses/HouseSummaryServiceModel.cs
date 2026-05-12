@@ -11,4 +11,8 @@ public class HouseSummaryServiceModel
 	public string ImageUrl { get; set; } = "";
 
 	public bool CurrentUserIsOwner { get; set; }
+
+	public bool CurrentUserIsRenter { get; init; }
+
+	public bool IsRented { get; init; }
 }

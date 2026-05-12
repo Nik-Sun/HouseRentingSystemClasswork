@@ -8,7 +8,9 @@ public interface IHouseService
 		HouseQueryServiceModel query,
 		string? currentUserId);
 
-	Task<HouseDetailsServiceModel?> GetDetailsAsync(int id);
+	Task<HouseDetailsServiceModel?> GetDetailsAsync(
+		int id,
+		string userId);
 
 	Task<IReadOnlyCollection<HouseCategoryServiceModel>> GetCategoriesAsync();
 
@@ -30,4 +32,12 @@ public interface IHouseService
 	Task<bool> DeleteAsync(
 		int id,
 		string userId);
+
+    Task<bool> RentAsync(
+		int id,
+		string userRenterId);
+
+    Task<bool> LeaveAsync(
+		int id,
+		string userRenterId);
 }

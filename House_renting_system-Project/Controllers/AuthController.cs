@@ -57,6 +57,7 @@ public class AuthController(IAuthService service) : Controller
 			Username = model.Username,
 			Email = model.Email,
 			Password = model.Password,
+			Role = model.Role
 		};
 
         var result = await service.RegisterAsync(registerServiceModel);

@@ -1,5 +1,6 @@
 namespace House_renting_system_Project.Controllers;
 
+using House_renting_system_Project.Extensions;
 using House_Renting_System_Project.Services.Contracts;
 using House_Renting_System_Project.Services.Models.Houses;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Models.House;
 using Models.Query;
 using System.Security.Claims;
+
+using static Common.Constants.RoleNames;
 
 public class HouseController(IHouseService service) : Controller
 {
@@ -51,7 +54,10 @@ public class HouseController(IHouseService service) : Controller
 
 	public async Task<IActionResult> Details(int id)
 	{
-		var house = await service.GetDetailsAsync(id);
+		var house = await service.GetDetailsAsync(
+			id,
+			this.User.GetId()!);
+
 		if (house is null)
 		{
 			return this.BadRequest();
@@ -72,7 +78,7 @@ public class HouseController(IHouseService service) : Controller
         return this.View(houseDetailViewModel);
 	}
 
-	[Authorize]
+	[Authorize(Roles = Agent)]
 	[HttpGet]
 	public async Task<IActionResult> Create()
 	{
@@ -84,7 +90,7 @@ public class HouseController(IHouseService service) : Controller
 		return this.View(model);
 	}
 
-    [Authorize]
+    [Authorize(Roles = Agent)]
     [HttpPost]
 	public async Task<IActionResult> Create(CreateHouseModel model)
 	{
@@ -107,7 +113,7 @@ public class HouseController(IHouseService service) : Controller
 		return this.RedirectToAction(nameof(this.AllHouses));
 	}
 
-    [Authorize]
+    [Authorize(Roles = Agent)]
     [HttpGet]
 	public async Task<IActionResult> MyHouses()
 	{
@@ -132,7 +138,7 @@ public class HouseController(IHouseService service) : Controller
 	}
 
 	[HttpGet]
-    [Authorize]
+    [Authorize(Roles = Agent)]
     public async Task<IActionResult> Edit(int id)
 	{
 		var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -166,7 +172,7 @@ public class HouseController(IHouseService service) : Controller
 	}
 
 	[HttpPost]
-    [Authorize]
+    [Authorize(Roles = Agent)]
     public async Task<IActionResult> Edit(CreateHouseModel model)
 	{
 		if (!this.ModelState.IsValid)
@@ -194,7 +200,7 @@ public class HouseController(IHouseService service) : Controller
 	}
 
 	[HttpPost]
-    [Authorize]
+    [Authorize(Roles = Agent)]
     public async Task<IActionResult> Delete(int id)
 	{
 		var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -215,6 +221,50 @@ public class HouseController(IHouseService service) : Controller
 		return this.RedirectToAction(nameof(this.MyHouses));
 	}
 
+	[HttpPost]
+	[Authorize(Roles = Client)]
+	public async Task<IActionResult> Rent(int id)
+	{
+		var currentUserId = this.User.GetId();
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return this.Unauthorized();
+        }
+
+		var success = await service.RentAsync(
+			id,
+			currentUserId);
+
+		if (success)
+		{
+            return this.RedirectToAction(nameof(this.AllHouses));
+        }
+
+        return this.Unauthorized();
+    }
+
+    [HttpPost]
+    [Authorize(Roles = Client)]
+    public async Task<IActionResult> Leave(int id)
+    {
+        var currentUserId = this.User.GetId();
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return this.Unauthorized();
+        }
+
+        var success = await service.LeaveAsync(
+            id,
+            currentUserId);
+
+        if (success)
+        {
+            return this.RedirectToAction(nameof(this.AllHouses));
+        }
+
+        return this.Unauthorized();
+    }
+
     private static HousesViewModel MapHouse(HouseSummaryServiceModel house)
 		=> new()
 		{
@@ -223,6 +273,8 @@ public class HouseController(IHouseService service) : Controller
 			Address = house.Address,
 			ImageUrl = house.ImageUrl,
 			CurrentUserIsOwner = house.CurrentUserIsOwner,
+			CurrentUserIsRenter = house.CurrentUserIsRenter,
+			IsRented = house.IsRented
 		};
 
 	private static CategoryViewModel MapCategory(HouseCategoryServiceModel category)

@@ -39,11 +39,15 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
 				ImageUrl = h.ImageUrl,
 				Name = h.Title,
 				CurrentUserIsOwner = h.AgentId == currentUserId,
+				CurrentUserIsRenter = h.RenterId == currentUserId,
+				IsRented = h.RenterId != null,
             })
 			.ToListAsync();
 	}
 
-	public async Task<HouseDetailsServiceModel?> GetDetailsAsync(int id)
+	public async Task<HouseDetailsServiceModel?> GetDetailsAsync(
+		int id,
+		string userId)
 		=> await data.Houses
 			.Where(h => h.Id == id)
 			.Select(h => new HouseDetailsServiceModel
@@ -54,8 +58,10 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
 				CreatedBy = h.Agent.UserName ?? "",
 				ImageUrl = h.ImageUrl,
 				Price = h.PricePerMonth,
-				Name = h.Title
-			})
+				Name = h.Title,
+                CurrentUserIsRenter = h.RenterId == userId,
+                IsRented = h.RenterId != null,
+            })
 			.FirstOrDefaultAsync();
 
 	public async Task<IReadOnlyCollection<HouseCategoryServiceModel>> GetCategoriesAsync()
@@ -170,11 +176,11 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
 		return true;
 	}
 
-    public async Task<bool> RentAsync(
-		int houseId,
+	public async Task<bool> RentAsync(
+		int id,
 		string userRenterId)
     {
-		var house = await this.GetHouse(houseId);
+        var house = await this.GetHouse(id);
 		if (house is null || house.RenterId is not null)
 		{
 			return false;
@@ -186,11 +192,12 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
 		return true;
     }
 
+
     public async Task<bool> LeaveAsync(
-		int houseId,
-		string userRenterId)
+        int id,
+        string userRenterId)
     {
-        var house = await this.GetHouse(houseId);
+        var house = await this.GetHouse(id);
         if (house is null || house.RenterId is null)
         {
             return false;
@@ -202,7 +209,7 @@ public class HouseService(HouseRentingDbContext data) : IHouseService
         return true;
     }
 
-	private async Task<House?> GetHouse(int id)
+    private async Task<House?> GetHouse(int id)
 		=> await data
 			.Houses
 			.FirstOrDefaultAsync(h => h.Id == id);
